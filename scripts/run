@@ -1,0 +1,4 @@
+set -euxo pipefail
+
+npx webpack
+go run main.go
