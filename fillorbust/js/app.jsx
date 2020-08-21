@@ -1,11 +1,17 @@
 import React, { Component} from "react";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Scorecard from "./routes/scorecard";
+import Homepage from "./routes/homepage";
 
 class App extends Component{
   render(){
     return(
-      <div className="App">
-        <h1>Hello, World!</h1>
-      </div>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Homepage}/>
+          <Route exact path="/newGame" component={Scorecard}/>
+        </Switch>
+      </Router>
     );
   }
 }

@@ -2,16 +2,21 @@ package main
 
 import (
     "fmt"
+    "encoding/json"
     "net/http"
 )
 
-func setupRoutes() {
-    http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Simple Server")
-    })
+func newGame(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("handling /api/newGame request...")
+    playerScores := make(map[string]int)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(playerScores)
 }
 
 func main() {
-    setupRoutes()
+    fmt.Println("api running on port 8080...")
+
+    http.HandleFunc("/api/newGame", newGame)
     http.ListenAndServe(":8080", nil)
 }
