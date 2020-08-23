@@ -9,6 +9,7 @@ import (
 func newGame(w http.ResponseWriter, r *http.Request) {
     fmt.Println("handling /api/newGame request...")
     playerScores := make(map[string]int)
+    playerScores["zach"] = 6969
 
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(playerScores)
