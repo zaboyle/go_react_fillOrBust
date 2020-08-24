@@ -6,6 +6,7 @@ class Scorecard extends Component {
 		super(props)
 		this.state = {
 			session: "",
+			gameStateUrl: "http://localhost:8080/api/gamestate",
 			scores: { "lisa": 5, "zach": 20 }
 		}
 		this.addPlayer = this.addPlayer.bind(this);
@@ -15,7 +16,7 @@ class Scorecard extends Component {
 	componentDidMount() {
 		const { session } = this.props.match.params
 
-		// fetch("localhost:8080/api/game?session=${session}")
+		// fetch(`{gameStateUrl}?session=${session}`)
 		//     .then((scores) => {
 		//         this.setState(() => ({ scores }))
 		//     })
@@ -81,6 +82,7 @@ class Scorecard extends Component {
 					</div>
 				</div>
 
+				{/* point adder */}
 				<div className="one column row">
 					<div className="ten wide column center aligned">
 						<form className="ui form" onSubmit={this.addPoints}>
@@ -99,6 +101,7 @@ class Scorecard extends Component {
 					</div>
 				</div>
 
+				{/* table */}
 				<div className="one column row">
 					<div className="eight wide column center aligned">
 						<table className="ui table center aligned">
@@ -115,6 +118,7 @@ class Scorecard extends Component {
 					</div>
 				</div>
 
+				{/* player adder */}
 				<div className="one column row">
 					<div className="eight wide column center aligned">
 						<form className="ui form" onSubmit={this.addPlayer}>
