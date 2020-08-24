@@ -7,7 +7,9 @@ set -euxo pipefail
 trap "kill 0" EXIT
 
 # start backend
-go build -o dist/main fillorbust/api/main.go
+cd fillorbust/api
+go build -o ../../dist/main
+cd ../..
 ./dist/main &
 
 # rebuild frontend and run app
