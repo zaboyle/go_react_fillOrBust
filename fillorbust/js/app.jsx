@@ -9,7 +9,7 @@ class App extends Component{
       <Router>
         <Switch>
           <Route exact path="/" component={Homepage}/>
-          <Route exact path="/newGame" component={Scorecard}/>
+          <Route exact path="/:session" component={Scorecard}/>
         </Switch>
       </Router>
     );

@@ -2,9 +2,14 @@
 
 set -euxo pipefail
 
+# kill background processes on exit.'
+# see https://spin.atomicobject.com/2017/08/24/start-stop-bash-background-process/
+trap "kill 0" EXIT
+
 # start backend
 go run fillorbust/api/main.go &
 
 # rebuild frontend and run app
-npx webpack
-npm start
+npx webpack && npm start &
+
+wait
