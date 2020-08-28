@@ -5,10 +5,18 @@ class Scorecard extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			session: "",
+			session: this.props.match.params.session,
 			gameStateUrl: "http://localhost:8080/api/gamestate",
-			scores: { "lisa": 5, "zach": 20 }
+			addPointsUrl: "http://localhost:8080/api/addpoints",
+			addPlayerUrl: "http://localhost:8080/api/addplayer",
+			currentPlayer: "",
+			newPlayer: "",
+			score: 0,
+			scores: { "lisa": 0, "zach": 0 }
 		}
+		this.handleScoreChange = this.handleScoreChange.bind(this);
+		this.handleCurrentPlayerChange = this.handleCurrentPlayerChange.bind(this);
+		this.handleNewPlayerChange = this.handleNewPlayerChange.bind(this);
 		this.addPlayer = this.addPlayer.bind(this);
 		this.addPoints = this.addPoints.bind(this);
 	}
@@ -22,10 +30,47 @@ class Scorecard extends Component {
 		//     })
 	}
 
+	handleScoreChange(event) {
+		this.setState({score: event.target.value});
+	}
+
+	handleCurrentPlayerChange(event) {
+		this.setState({currentPlayer: event.target.value});
+	}
+
+	handleNewPlayerChange(event) {
+		this.setState({newPlayer: event.target.value});
+	}
+
 	addPlayer(event) {
 		event.preventDefault();
 
 		console.log("adding player...");
+
+		fetch(`${this.state.addPlayerUrl}?session=${this.state.session}&player=${event.target.newplayer.value}`,
+			{
+				method: "post",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ text: this.state.value }),
+			},
+		)
+		.then((response) => {
+			console.log(response);
+			if (!response.ok) throw Error(response.statusText);
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			const newScores = this.state.scores;
+			newScores[this.state.newPlayer] = data;
+			this.setState({scores: newScores});
+		})
+		.catch(error => console.log(error));
+
+		this.setState({newPlayer: ""});
 	}
 
 	addPoints(event) {
@@ -34,29 +79,31 @@ class Scorecard extends Component {
 		console.log("adding points...");
 
 		// TODO: update data by posting to API and update value to display
+		
+		// const url = this.state.addPointsUrl + "?" + $.param({session: this.state.session, player: event.target.playerlist.value, amount: event.target.points.value})
 
-		// fetch(this.props.url,
-		// 	{
-		// 		method: "post",
-		// 		headers: {
-		// 			Accept: "application/json",
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify({ text: this.state.value }),
-		// 	},
-		// )
-		// .then((response) => {
-		// 	console.log(response);
-		// 	if (!response.ok) throw Error(response.statusText);
-		// 	return response.json();
-		// })
-		// .then((data) => {
-		// 	this.setState({
-		// 		comments: this.state.comments.concat(data),
-		// 		value: "",
-		// 	});
-		// })
-		// .catch(error => console.log(error));
+		fetch(`${this.state.addPointsUrl}?session=${this.state.session}&player=${event.target.playerlist.value}&amount=${event.target.points.value}`,
+			{
+				method: "post",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ text: this.state.value }),
+			},
+		)
+		.then((response) => {
+			console.log(response);
+			if (!response.ok) throw Error(response.statusText);
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			const newScores = this.state.scores;
+			newScores[this.state.currentPlayer] = data;
+			this.setState({scores: newScores});
+		})
+		.catch(error => console.log(error));
 	}
 
 	render() {
@@ -86,13 +133,13 @@ class Scorecard extends Component {
 				<div className="one column row">
 					<div className="ten wide column center aligned">
 						<form className="ui form" onSubmit={this.addPoints}>
-							<select className="ui selection dropdown four wide field" name="playerlist" id="playerlist">
+							<select className="ui selection dropdown four wide field" name="playerlist" id="playerlist" value={this.state.currentPlayer} onChange={this.handleCurrentPlayerChange}>
 								<option hidden defaultValue="">Player</option>
 								{playerNames}
 							</select>
 
 							<div className="ui input field">
-								<input type="number" name="points" placeholder="Point Adjustment" />
+								<input type="number" name="points" placeholder="Point Adjustment" value={this.state.score} onChange={this.handleScoreChange}/>
 							</div>
 							<div className="ui input field">
 								<input type="submit" name="submit" value="Add Points" />
@@ -123,7 +170,7 @@ class Scorecard extends Component {
 					<div className="eight wide column center aligned">
 						<form className="ui form" onSubmit={this.addPlayer}>
 							<div className="ui input field">
-								<input type="text" name="newplayer" placeholder="player1" />
+								<input type="text" name="newplayer" placeholder="New Player" value={this.state.newPlayer} onChange={this.handleNewPlayerChange}/>
 							</div>
 							<button type="submit" className="ui icon button">
 								<i className="plus icon"></i>

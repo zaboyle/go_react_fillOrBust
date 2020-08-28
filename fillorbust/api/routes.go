@@ -56,37 +56,45 @@ func gameState(w http.ResponseWriter, r *http.Request) {
 }
 
 func addPlayer(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("handling /api/addplayer request...")
-	// url parsing at
-	// https://golangcode.com/get-a-url-parameter-from-a-request/
-
-	session := r.URL.Query().Get("session")
-	player := r.URL.Query().Get("player")
-
-	sessions[session][player] = 0
-
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-	// return points the new player has
-	json.NewEncoder(w).Encode(0)
-	// print new game state for debugging
-	fmt.Println(fmt.Sprintf("new game state: %v", sessions[session]))
+	// url parsing at
+	// https://golangcode.com/get-a-url-parameter-from-a-request/
+	if r.Method == http.MethodPost {
+		fmt.Println("handling /api/addplayer POST request...")
+		session := r.URL.Query().Get("session")
+		player := r.URL.Query().Get("player")
+
+		sessions[session][player] = 0
+		// return points the new player has
+		json.NewEncoder(w).Encode(0)
+		// print new game state for debugging
+		fmt.Println(fmt.Sprintf("new game state: %v", sessions[session]))
+	} else if r.Method == http.MethodOptions {
+		fmt.Println("handling /api/addplayer OPTIONS request...")
+		w.WriteHeader(200)
+	}
 }
 
 func addPoints(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("handling /api/addpoints request...")
-
-	session := r.URL.Query().Get("session")
-	player := r.URL.Query().Get("player")
-	amount, _ := strconv.Atoi(r.URL.Query().Get("amount"))
-
-	sessions[session][player] += amount
-
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-	// return points the player now has
-	json.NewEncoder(w).Encode(sessions[session][player])
-	fmt.Println(fmt.Sprintf("new game state: %v", sessions[session]))
+
+	if r.Method == http.MethodPost {
+		fmt.Println("handling /api/addpoints POST request...")
+		session := r.URL.Query().Get("session")
+		player := r.URL.Query().Get("player")
+		amount, _ := strconv.Atoi(r.URL.Query().Get("amount"))
+
+		sessions[session][player] += amount
+
+		// return points the player now has
+		json.NewEncoder(w).Encode(sessions[session][player])
+		fmt.Println(fmt.Sprintf("new game state: %v", sessions[session]))
+	} else if r.Method == http.MethodOptions {
+		fmt.Println("handling /api/addpoints OPTIONS request...")
+		w.WriteHeader(200)
+	}
 }
